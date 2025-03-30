@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
@@ -22,7 +22,7 @@ export default function Dashboard() {
         if (!res.ok) {
           throw new Error("Failed to fetch reports");
         }
-        
+
         return res.json();
       })
       .then((data) => {
@@ -43,17 +43,12 @@ export default function Dashboard() {
     Jaundice: r.Jaundice === 1 ? "Yes" : "No",
   }));
 
-  // Filtering students based on search term
   const filteredReports = processedReports.filter((report) =>
     report.Name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Chart Data
   const totalStudents = reports.length;
   const maleStudents = reports.filter((r) => r.Gender === "Male").length;
-  const femaleStudents = totalStudents - maleStudents;
-  const maleAutism = reports.filter((r) => r.Gender === "Male" && r.Prediction === "Autism").length;
-  const femaleAutism = reports.filter((r) => r.Gender === "Female" && r.Prediction === "Autism").length;
 
   const studentData = {
     total: 100,
@@ -76,31 +71,12 @@ export default function Dashboard() {
 
   const COLORS = ["#4B79A1", "#F1C40F", "#16A085", "#E74C3C"];
 
-
-
   const studentsPerPage = 5;
   const totalPages = Math.ceil(studentData.length / studentsPerPage);
-
-  const handleViewReport = (student) => {
-    setSelectedReport(`Detailed report for ${student.name}: Age ${student.age}, Grade ${student.grade}.`);
-    setIsPopupOpen(true);
-  };
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
     setSelectedReport(null);
-  };
-
-  const handleNextPage = () => {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage((prev) => prev - 1);
-    }
   };
 
   const handleOpenForm = () => {
@@ -108,96 +84,101 @@ export default function Dashboard() {
   };
 
   const HandleTest = () => {
-    router.push("/qna")
+    router.push("/qna");
   };
 
   const handleSubmitForm = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-  
-    // Collecting student information from form
+
     const studentInfo = {
       name: formData.get("name"),
       age: formData.get("age"),
       grade: formData.get("grade"),
-      gender: formData.get("gender"), // New field
-      jaundice: formData.get("jaundice"), // New field
+      gender: formData.get("gender"),
+      jaundice: formData.get("jaundice"),
     };
-  
-    // Save student info in sessionStorage
+
     if (typeof window !== "undefined") {
       sessionStorage.setItem("studentInfo", JSON.stringify(studentInfo));
       sessionStorage.setItem("age", studentInfo.age);
       sessionStorage.setItem("gender", studentInfo.gender);
       sessionStorage.setItem("jaundice", studentInfo.jaundice);
     }
-  
+
     alert("Student info saved. Starting the test.");
     setIsFormOpen(false);
   };
 
-
-  
-
   return (
     <div className="min-h-screen bg-gray-50 text-black p-6">
       <CommonHeaderPage />
-      <h1 className="text-3xl font-bold text-center text-[#4B79A1] mb-6">AIMED Dashboard</h1>
-      <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">VIT VELLORE</h2>
+      <h1 className="text-3xl font-bold text-center text-[#4B79A1] mb-6">
+        AIMED Dashboard
+      </h1>
+      <h2 className="text-2xl font-semibold text-center text-gray-700 mb-6">
+        VIT VELLORE
+      </h2>
 
-    <section className="h-screen flex flex-col justify-start pt-10 items-center gap-5">
-        
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Bar Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
-          <h2 className="text-xl font-semibold mb-4 text-[#4B79A1]">Student Distribution</h2>
-          <BarChart
-            width={400}
-            height={300}
-            data={barChartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="value" fill="#4B79A1" />
-          </BarChart>
-        </div>
-
-        {/* Pie Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
-          <h2 className="text-xl font-semibold mb-4 text-[#4B79A1]">Autism Distribution</h2>
-          <PieChart width={400} height={400}>
-            <Pie
-              data={pieChartData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={120}
-              fill="#8884d8"
+      <section className="h-screen flex flex-col justify-start pt-10 items-center gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
+            <h2 className="text-xl font-semibold mb-4 text-[#4B79A1]">
+              Student Distribution
+            </h2>
+            <BarChart
+              width={400}
+              height={300}
+              data={barChartData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
-              {pieChartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </div>
-      </div>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="#4B79A1" />
+            </BarChart>
+          </div>
 
-      <div className="my-8 text-center">
-        <button
-          onClick={handleOpenForm}
-          className="bg-[#F1C40F] hover:bg-[#F39C12] text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-all duration-300"
-        >
-          Test a Student
-        </button>
-      </div>
-      <h1 className="text-3xl translate-y-9 font-bold text-center text-[#4B79A1] mb-6">Check your report</h1>
-      <a
+          <div className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
+            <h2 className="text-xl font-semibold mb-4 text-[#4B79A1]">
+              Autism Distribution
+            </h2>
+            <PieChart width={400} height={400}>
+              <Pie
+                data={pieChartData}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={120}
+                fill="#8884d8"
+              >
+                {pieChartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                  />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </div>
+        </div>
+
+        <div className="my-8 text-center">
+          <button
+            onClick={handleOpenForm}
+            className="bg-[#F1C40F] hover:bg-[#F39C12] text-white px-6 py-3 rounded-lg font-semibold shadow-md transition-all duration-300"
+          >
+            Test a Student
+          </button>
+        </div>
+        <h1 className="text-3xl translate-y-9 font-bold text-center text-[#4B79A1] mb-6">
+          Check your report
+        </h1>
+        <a
           href="#about"
           className="absolute bottom-10 z-20 flex flex-col justify-center items-center w-8 h-13  rounded-full  text-black hover:shadow-xl hover:shadow-black transition-all "
         >
@@ -208,148 +189,175 @@ export default function Dashboard() {
             <img src="./images/down-chevron.png" alt="" />
           </span>
         </a>
-        </section>
-      
+      </section>
 
-      {/* Search and Recent Students Container */}
       <section className="h-[75vh]">
-        <h1 className="text-3xl font-bold text-center text-[#4B79A1] mb-6">REPORTS</h1>
+        <h1 className="text-3xl font-bold text-center text-[#4B79A1] mb-6">
+          REPORTS
+        </h1>
         <div className="mt-6 bg-white rounded-xl border shadow-lg p-6">
-        <input
-          type="text"
-          placeholder="Search students..."
-          className="w-full p-2 border rounded-lg mb-4"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        {loading ? (
-          <p className="text-center text-gray-700">Loading reports...</p>
-        ) : error ? (
-          <p className="text-center text-red-600">Error: {error}</p>
-        ) : (
-          <div className="overflow-y-auto max-h-[400px]">
-            {filteredReports.map((report, index) => (
-              <div key={index} className="flex justify-between items-center bg-gray-100 p-4 rounded-lg shadow-md my-2">
-                <span>
-                  {report.Name}, Age: {report.Age}, Grade: {report.Grade}, Gender: {report.Gender}, Jaundice: {report.Jaundice}
-                </span>
-                <button
-                  className="bg-[#E74C3C] text-white px-4 py-2 rounded-lg font-semibold"
-                  onClick={() => setSelectedReport(report)}
+          <input
+            type="text"
+            placeholder="Search students..."
+            className="w-full p-2 border rounded-lg mb-4"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {loading ? (
+            <p className="text-center text-gray-700">Loading reports...</p>
+          ) : error ? (
+            <p className="text-center text-red-600">Error: {error}</p>
+          ) : (
+            <div className="overflow-y-auto max-h-[400px]">
+              {filteredReports.map((report, index) => (
+                <div
+                  key={index}
+                  className="flex justify-between items-center bg-gray-100 p-4 rounded-lg shadow-md my-2"
                 >
-                  View Report
-                </button>
-              </div>
-            ))}
+                  <span>
+                    {report.Name}, Age: {report.Age}, Grade: {report.Grade},
+                    Gender: {report.Gender}, Jaundice: {report.Jaundice}
+                  </span>
+                  <button
+                    className="bg-[#E74C3C] text-white px-4 py-2 rounded-lg font-semibold"
+                    onClick={() => setSelectedReport(report)}
+                  >
+                    View Report
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {selectedReport && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white text-black p-6 rounded-lg max-w-lg w-full">
+              <h2 className="text-xl font-semibold mb-4">Student Report</h2>
+              <p>
+                <strong>Name:</strong> {selectedReport.Name}
+              </p>
+              <p>
+                <strong>Age:</strong> {selectedReport.Age}
+              </p>
+              <p>
+                <strong>Grade:</strong> {selectedReport.Grade}
+              </p>
+              <p>
+                <strong>Gender:</strong> {selectedReport.Gender}
+              </p>
+              <p>
+                <strong>Jaundice:</strong> {selectedReport.Jaundice}
+              </p>
+              <p>
+                <strong>Prediction:</strong> {selectedReport.Prediction}
+              </p>
+              <p>
+                <strong>AsdConfidence:</strong> {selectedReport.AsdConfidence}%
+              </p>
+              <p>
+                <strong>VideoConfidence:</strong>{" "}
+                {selectedReport.VideoConfidence}%
+              </p>
+              <p>
+                <strong>FinalConfidence:</strong>{" "}
+                {selectedReport.FinalConfidence}%
+              </p>
+              <button
+                onClick={() => setSelectedReport(null)}
+                className="mt-4 bg-[#E74C3C] text-white px-4 py-2 rounded-lg"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
-      </div>
-      {selectedReport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white text-black p-6 rounded-lg max-w-lg w-full">
-            <h2 className="text-xl font-semibold mb-4">Student Report</h2>
-            <p><strong>Name:</strong> {selectedReport.Name}</p>
-            <p><strong>Age:</strong> {selectedReport.Age}</p>
-            <p><strong>Grade:</strong> {selectedReport.Grade}</p>
-            <p><strong>Gender:</strong> {selectedReport.Gender}</p>
-            <p><strong>Jaundice:</strong> {selectedReport.Jaundice}</p>
-            <p><strong>Prediction:</strong> {selectedReport.Prediction}</p>
-            <p><strong>AsdConfidence:</strong> {selectedReport.AsdConfidence}%</p>
-            <p><strong>VideoConfidence:</strong> {selectedReport.VideoConfidence}%</p>
-            <p><strong>FinalConfidence:</strong> {selectedReport.FinalConfidence}%</p>
-            <button onClick={() => setSelectedReport(null)} className="mt-4 bg-[#E74C3C] text-white px-4 py-2 rounded-lg">Close</button>
+
+        {isPopupOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white text-black p-6 rounded-lg max-w-lg w-full">
+              <h2 className="text-xl font-semibold mb-4">Student Report</h2>
+              <p>{selectedReport}</p>
+              <button
+                onClick={handleClosePopup}
+                className="mt-4 bg-[#E74C3C] hover:bg-[#C0392B] text-white px-4 py-2 rounded-lg"
+              >
+                Close
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-
-      {isPopupOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white text-black p-6 rounded-lg max-w-lg w-full">
-            <h2 className="text-xl font-semibold mb-4">Student Report</h2>
-            <p>{selectedReport}</p>
-            <button
-              onClick={handleClosePopup}
-              className="mt-4 bg-[#E74C3C] hover:bg-[#C0392B] text-white px-4 py-2 rounded-lg"
+        {isFormOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <form
+              onSubmit={handleSubmitForm}
+              className="bg-white text-black p-6 rounded-lg max-w-md w-full"
             >
-              Close
-            </button>
+              <h2 className="text-xl font-semibold text-[#4B79A1] mb-4">
+                Enter Student Info
+              </h2>
+              <div className="mb-4">
+                <label className="block mb-2">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-2">Age</label>
+                <input
+                  type="number"
+                  name="age"
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-2">Grade</label>
+                <input
+                  type="text"
+                  name="grade"
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block mb-2">Gender</label>
+                <select
+                  name="gender"
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                >
+                  <option value="1">Female</option>
+                  <option value="0">Male</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block mb-2">Jaundice</label>
+                <select
+                  name="jaundice"
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-lg"
+                >
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                className="bg-[#4B79A1] hover:bg-[#3A6E87] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
+                onClick={HandleTest}
+              >
+                Submit and Start the Test
+              </button>
+            </form>
           </div>
-        </div>
-      )}
-
-      {isFormOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <form
-            onSubmit={handleSubmitForm}
-            className="bg-white text-black p-6 rounded-lg max-w-md w-full"
-          >
-            <h2 className="text-xl font-semibold text-[#4B79A1] mb-4">Enter Student Info</h2>
-            <div className="mb-4">
-              <label className="block mb-2">Name</label>
-              <input
-                type="text"
-                name="name"
-                required
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">Age</label>
-              <input
-                type="number"
-                name="age"
-                required
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-2">Grade</label>
-              <input
-                type="text"
-                name="grade"
-                required
-                className="w-full p-2 border border-gray-300 rounded-lg"
-              />
-            </div>
-            <div className="mb-4">
-  <label className="block mb-2">Gender</label>
-  <select
-    name="gender"
-    required
-    className="w-full p-2 border border-gray-300 rounded-lg"
-  >
-    <option value="1">Female</option>
-    <option value="0">Male</option>
-  </select>
-</div>
-
-<div className="mb-4">
-  <label className="block mb-2">Jaundice</label>
-  <select
-    name="jaundice"
-    required
-    className="w-full p-2 border border-gray-300 rounded-lg"
-  >
-    <option value="0">No</option>
-    <option value="1">Yes</option>
-  </select>
-</div>
-
-            <button
-              type="submit"
-              className="bg-[#4B79A1] hover:bg-[#3A6E87] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300"
-              onClick={HandleTest}
-            >
-              Submit and Start the Test
-            </button>
-          </form>
-        </div>
-      )}
+        )}
       </section>
-      
     </div>
   );
 }
-
-
